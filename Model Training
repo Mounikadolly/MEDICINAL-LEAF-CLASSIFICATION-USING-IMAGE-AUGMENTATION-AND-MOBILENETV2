@@ -1,0 +1,16 @@
+num_classes = len(train_generator.class_indices)
+base_model = MobileNetV2(input_shape=(128, 128, 3), include_top=False, weights='imagenet')
+base_model.trainable = False # Freeze the base model
+# Build Model
+model = keras.Sequential([
+ base_model,
+ layers.GlobalAveragePooling2D(),
+ layers.Dense(128, activation='relu'),
+ layers.Dropout(0.5),
+ layers.Dense(num_classes, activation='softmax')
+])
+# Compile model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Train model
+epochs = 25
+model.fit(train_generator, validation_data=val_generator, epochs=epochs)
